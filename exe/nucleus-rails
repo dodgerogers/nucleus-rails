@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
-require "nucleus-rails"
+require "nucleus_rails"
 NucleusRails::CLI.new.call(ARGV)
