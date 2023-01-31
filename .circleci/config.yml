@@ -57,6 +57,7 @@ jobs:
       - store_test_results:
           path: ./reports
 
+# Rails version, not ruby version
 workflows:
   version: 2
   commit-workflow:
