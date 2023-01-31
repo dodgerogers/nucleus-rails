@@ -1,18 +1,18 @@
-require_relative "lib/nucleus/version"
+require_relative "lib/nucleus-rails/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "nucleus-framework"
-  spec.version = Nucleus::VERSION
+  spec.name = "nucleus-rails"
+  spec.version = NucleusRails::VERSION
   spec.authors = ["dodgerogers"]
   spec.email = ["dodgerogers@hotmail.com"]
-  spec.summary = "A Ruby business logic framework"
-  spec.homepage = "https://github.com/dodgerogers/nucleus"
+  spec.summary = "A Rails wrapper for the `nucleus-rails` gem"
+  spec.homepage = "https://github.com/dodgerogers/nucleus-rails"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.6"
   spec.metadata = {
-    "bug_tracker_uri" => "https://github.com/dodgerogers/nucleus/issues",
-    "changelog_uri" => "https://github.com/dodgerogers/nucleus/releases",
-    "source_code_uri" => "https://github.com/dodgerogers/nucleus",
+    "bug_tracker_uri" => "https://github.com/dodgerogers/nucleus-rails/issues",
+    "changelog_uri" => "https://github.com/dodgerogers/nucleus-rails/releases",
+    "source_code_uri" => "https://github.com/dodgerogers/nucleus-rails",
     "homepage_uri" => spec.homepage,
     "rubygems_mfa_required" => "true"
   }
@@ -23,6 +23,9 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency "nucleus-framework", '>= 0.2.0'
+
+  spec.add_development_dependency "rails", '~> 5.2.2'
   spec.add_development_dependency "minitest", "~> 5.11"
   spec.add_development_dependency "minitest-ci", "~> 3.4"
   spec.add_development_dependency "minitest-reporters", "~> 1.3"

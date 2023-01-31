@@ -1,3 +1,3 @@
-module Nucleus
+module NucleusRails
   VERSION = "0.2.0".freeze
 end
