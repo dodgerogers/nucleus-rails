@@ -1,0 +1,12 @@
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/site/
+/spec/reports/
+/tmp/
+/Gemfile.lock
+/vendor
+/nucleus-framework-*.gem
