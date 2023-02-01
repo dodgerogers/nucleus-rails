@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.version = NucleusRails::VERSION
   spec.authors = ["dodgerogers"]
   spec.email = ["dodgerogers@hotmail.com"]
-  spec.summary = "A Rails wrapper for the `nucleus-framework` gem"
+  spec.summary = "A Rails wrapper for the `nucleus-core` gem"
   spec.homepage = "https://github.com/dodgerogers/nucleus-rails"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.6"
@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "nucleus-core", ">= 0.1.0"
+  spec.add_runtime_dependency "nucleus-core", "~> 0.1.3"
 
   spec.add_development_dependency "minitest", "~> 5.11"
   spec.add_development_dependency "minitest-ci", "~> 3.4"
@@ -34,5 +34,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-minitest", "0.27.0"
   spec.add_development_dependency "rubocop-packaging", "0.5.2"
   spec.add_development_dependency "rubocop-performance", "1.15.2"
+  spec.add_development_dependency "rubocop-rails", "~> 2.17.4"
   spec.add_development_dependency "rubocop-rake", "0.6.0"
 end

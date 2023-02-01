@@ -19,13 +19,13 @@ Rake::Task["release"].enhance do
   system "open https://github.com/dodgerogers/nucleus-rails/releases"
 end
 
-task :disable_overcommit do
+task disable_overcommit: :environment do
   ENV["OVERCOMMIT_DISABLE"] = "1"
 end
 
 Rake::Task[:build].enhance [:disable_overcommit]
 
-task :verify_gemspec_files do
+task verify_gemspec_files: :environment do
   git_files = `git ls-files -z`.split("\x0")
   gemspec_files = Gem::Specification.load("nucleus_rails.gemspec").files.sort
   ignored_by_git = gemspec_files - git_files
@@ -50,13 +50,13 @@ Rake::Task[:build].enhance [:verify_gemspec_files]
 task bump: %w[bump:bundler bump:ruby bump:year]
 
 namespace :bump do
-  task :bundler do
+  task bundler: :environment do
     version = Gem.latest_version_for("bundler").to_s
     replace_in_file ".circleci/config.yml", /bundler -v (\S+)/ => version
     replace_in_file "Gemfile.lock", /^BUNDLED WITH\n\s+(\d\S+)$/ => version
   end
 
-  task :ruby do
+  task ruby: :environment do
     lowest = RubyVersions.lowest
     latest = RubyVersions.latest
     all_supported = RubyVersions.all_supported
@@ -67,8 +67,8 @@ namespace :bump do
     replace_in_file ".circleci/config.yml", /version: (\[.+\])/ => all_supported.inspect
   end
 
-  task :year do
-    replace_in_file "LICENSE.txt", /\(c\) (\d+)/ => Date.today.year.to_s
+  task year: :environment do
+    replace_in_file "LICENSE.txt", /\(c\) (\d+)/ => Time.zone.today.year.to_s
   end
 end
 
