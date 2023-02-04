@@ -10,3 +10,5 @@
 /Gemfile.lock
 /vendor
 /nucleus-rails-*.gem
+/log
+/log/*
