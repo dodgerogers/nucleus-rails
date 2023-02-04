@@ -1,17 +1,8 @@
 require "active_record"
-require "rails"
+require "nucleus_core"
 
 module NucleusRails
   autoload :CLI, "nucleus_rails/cli"
   autoload :VERSION, "nucleus_rails/version"
   autoload :Responder, "nucleus_rails/responder"
-  autoload :NucleusCore, "nucleus_core"
-
-  NucleusCore.configure do |config|
-    config.logger = Rails.logger
-    config.exceptions_map = {
-      not_found: ActiveRecord::RecordNotFound,
-      unprocessable: ActiveRecord::ActiveRecordError
-    }
-  end
 end

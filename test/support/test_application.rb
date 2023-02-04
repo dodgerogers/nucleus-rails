@@ -1,5 +1,6 @@
 require "rails"
 require "action_controller/railtie"
+require "nucleus_core/response_adapter"
 
 class TestView < NucleusCore::View
   def initialize(attrs={})
@@ -53,6 +54,12 @@ class UsersController < ActionController::API
       NucleusCore::NoResponse.new(headers: { "my_custom_headers" => "value" })
     end
   end
+
+  def edit
+    handle_response do
+      raise StandardError, "exception..."
+    end
+  end
 end
 
 Rails.application.initialize!
@@ -60,4 +67,5 @@ Rails.application.initialize!
 Rails.application.routes.draw do
   get :users, to: "users#index"
   get :user, to: "users#show"
+  put :user, to: "users#edit"
 end

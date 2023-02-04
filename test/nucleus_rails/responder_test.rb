@@ -67,7 +67,18 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
     get "/user.json"
 
     assert_response 204
+
     assert_equal("", response.body)
     assert_equal("value", response.headers["My-Custom-Headers"])
+  end
+
+  test "when an exception is raised" do
+    put "/user.json"
+
+    assert_response 500
+
+    body = JSON.parse(response.body)
+    assert_equal("exception...", body["message"])
+    assert_equal("internal_server_error", body["status"])
   end
 end
