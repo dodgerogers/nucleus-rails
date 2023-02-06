@@ -21,34 +21,34 @@ module NucleusRails::Responder
 
   delegate :set_header, to: :response
 
-  # entity: <Nucleus::ResponseAdapter>
+  # entity: <Nucleus::ResponseAdapter status=Int content={} location=String headers={}>
   def render_json(entity)
-    render(json: entity.content, **render_attributes_from(entity))
+    render(json: entity.content, **render_attributes(entity))
   end
 
   def render_xml(entity)
-    render(xml: entity.content, **render_attributes_from(entity))
+    render(xml: entity.content, **render_attributes(entity))
   end
 
   def render_text(entity)
-    render(plain: entity.content, **render_attributes_from(entity))
+    render(plain: entity.content, **render_attributes(entity))
   end
 
   def render_pdf(entity)
-    send_data(entity.content, render_attributes_from(entity))
+    send_data(entity.content, render_attributes(entity))
   end
 
   def render_csv(entity)
-    send_data(entity.content, render_attributes_from(entity))
+    send_data(entity.content, render_attributes(entity))
   end
 
   def render_nothing(entity)
-    head(:no_content, render_attributes_from(entity))
+    head(:no_content, render_attributes(entity))
   end
 
   private
 
-  def render_attributes_from(entity)
+  def render_attributes(entity)
     {
       headers: entity.headers,
       status: entity.status,
