@@ -4,13 +4,25 @@
 [![Circle](https://circleci.com/gh/dodgerogers/nucleus-rails/tree/main.svg?style=shield)](https://app.circleci.com/pipelines/github/dodgerogers/nucleus-rails?branch=main)
 [![Code Climate](https://codeclimate.com/github/dodgerogers/nucleus-rails/badges/gpa.svg)](https://codeclimate.com/github/dodgerogers/nucleus-rails)
 
-`nucleus-rails` provides a response adapter to `nucleus-core`.
+- [Quick start](#quick-start)
+- [Support](#support)
+- [License](#license)
+- [Code of conduct](#code-of-conduct)
+- [Contribution guide](#contribution-guide)
+
+`nucleus-rails` adapts `nucleus-core` to work with the rails framework.
 
 ## Quick start
 
+1. Install the gem
+
+`Gemfile`
+
+```ruby
+gem 'nucleus-rails'
 ```
-$ gem install nucleus-rails
-```
+
+2. Initialize `nucleus-rails`
 
 `config/initializers/nucleus-rails.rb`
 
@@ -18,50 +30,23 @@ $ gem install nucleus-rails
 require "nucleus-rails"
 ```
 
+3. Include the `responder` module, then call your business logic using the `execute` block method. Return either a `NucleusView`, a `Nucleus::Operation::Context`, or raise an exception to render a response.
+
 ```ruby
 class PaymentsController < ApplicationController
-  include NucleusCore::Responder
-
-  before_action do |controller|
-    init_responder(
-      response_adapter: controller,
-      request_format: controller.request&.format
-    )
-  end
+  include NucleusRails::Responder
 
   def create
-    handle_response do
-      policy.enforce!(:can_write?)
+    execute do |req|
+      context, _process = MyWorkflow.call(id: req.parameters[:id])
 
-      context, _process = MyWorkflow.call(invoice_params)
+      return context unless context.success?
 
-      return context if !context.success?
-
-      return MyView.new(cart: context.cart, paid: context.paid)
+      return MyView.new(resource: context.resource)
     end
-  end
-
-  private
-
-  def policy
-    MyPolicy.new(current_user)
-  end
-
-  def invoice_params
-    params.slice(:cart_id)
   end
 end
 ```
-
-See [nucleus-core](https://codeclimate.com/github/dodgerogers/nucleus-core) for business logic implementation examples.
-
----
-
-- [Quick start](#quick-start)
-- [Support](#support)
-- [License](#license)
-- [Code of conduct](#code-of-conduct)
-- [Contribution guide](#contribution-guide)
 
 ## Support
 

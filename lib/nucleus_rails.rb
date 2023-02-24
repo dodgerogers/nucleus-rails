@@ -1,4 +1,3 @@
-require "active_record"
 require "nucleus_core"
 
 module NucleusRails

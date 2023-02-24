@@ -4,55 +4,86 @@ require "nucleus_core"
 
 module NucleusRails::Responder
   extend ActiveSupport::Concern
-  include ActionController::MimeResponds
-  include ActionController::ImplicitRender
-  include NucleusCore::Responder
+
+  class RequestAdapter
+    attr_reader :controller
+
+    def initialize(controller)
+      @controller = controller
+    end
+
+    def call(_)
+      {
+        format: controller.request&.format&.to_sym,
+        parameters: controller.params,
+        request: controller.request
+      }
+    end
+  end
+
+  class ResponseAdapter
+    attr_reader :controller
+
+    def initialize(controller)
+      @controller = controller
+    end
+
+    # entity: <Nucleus::ResponseAdapter status=Int content={} location=String headers={}>
+    def render_json(entity)
+      controller.render(json: entity.content, **render_attributes(entity))
+    end
+
+    def render_xml(entity)
+      controller.render(xml: entity.content, **render_attributes(entity))
+    end
+
+    def render_text(entity)
+      controller.render(plain: entity.content, **render_attributes(entity))
+    end
+
+    def render_pdf(entity)
+      controller.send_data(entity.content, render_attributes(entity))
+    end
+
+    def render_csv(entity)
+      controller.send_data(entity.content, render_attributes(entity))
+    end
+
+    def render_nothing(entity)
+      controller.head(:no_content, render_attributes(entity))
+    end
+
+    def set_header(key, value)
+      controller.response.set_header(key, value)
+    end
+
+    private
+
+    def render_attributes(entity)
+      {
+        headers: entity.headers,
+        status: entity.status,
+        location: entity.location
+      }
+    end
+  end
 
   included do
+    attr_accessor :responder
+
     before_action do |controller|
-      init_responder(
-        response_adapter: controller,
-        request_format: controller.request&.format
+      @responder = NucleusCore::Responder.new(
+        request_adapter: RequestAdapter.new(controller),
+        response_adapter: ResponseAdapter.new(controller)
       )
     end
 
-    rescue_from Exception, with: :handle_exception
-  end
+    rescue_from Exception do |e|
+      responder.handle_exception(e)
+    end
 
-  delegate :set_header, to: :response
-
-  # entity: <Nucleus::ResponseAdapter status=Int content={} location=String headers={}>
-  def render_json(entity)
-    render(json: entity.content, **render_attributes(entity))
-  end
-
-  def render_xml(entity)
-    render(xml: entity.content, **render_attributes(entity))
-  end
-
-  def render_text(entity)
-    render(plain: entity.content, **render_attributes(entity))
-  end
-
-  def render_pdf(entity)
-    send_data(entity.content, render_attributes(entity))
-  end
-
-  def render_csv(entity)
-    send_data(entity.content, render_attributes(entity))
-  end
-
-  def render_nothing(entity)
-    head(:no_content, render_attributes(entity))
-  end
-
-  private
-
-  def render_attributes(entity)
-    {
-      headers: entity.headers,
-      status: entity.status,
-      location: entity.location
-    }
+    def execute(&block)
+      responder.execute(self, &block)
+    end
   end
 end
