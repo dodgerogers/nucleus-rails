@@ -1,10 +1,9 @@
 require "rails"
 require "action_controller/railtie"
-require "nucleus_core/response_adapter"
 
 class TestView < NucleusCore::View
   def initialize(attrs={})
-    super(attrs)
+    super(attrs.slice(:name, :ids))
   end
 
   def json_response
@@ -44,19 +43,19 @@ class UsersController < ActionController::API
   include NucleusRails::Responder
 
   def index
-    handle_response do
+    execute do |_req|
       TestView.new(name: "Bob", ids: [1, 2, 3])
     end
   end
 
   def show
-    handle_response do
+    execute do |_req|
       NucleusCore::NoResponse.new(headers: { "my_custom_headers" => "value" })
     end
   end
 
   def edit
-    handle_response do
+    execute do |_req|
       raise StandardError, "exception..."
     end
   end

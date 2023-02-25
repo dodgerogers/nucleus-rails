@@ -12,9 +12,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
 
     expected_payload = "{\"a\":{\"nested\":{\"hash\":\"value\"}},\"b\":[4,5,6]}"
     assert_equal(expected_payload, response.body)
-
-    response_body = JSON.parse(expected_payload)
-    assert(response_body.is_a?(Hash))
+    assert_equal("application/json; charset=utf-8", response.content_type)
   end
 
   test "with xml format" do
@@ -34,6 +32,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
       </hash>
     XML
     assert_equal(expected_payload, response.body.squish)
+    assert_equal("application/xml; charset=utf-8", response.content_type)
   end
 
   test "with csv format" do
@@ -43,6 +42,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
 
     expected_payload = "Bob\n1-2-3"
     assert_equal(expected_payload, response.body)
+    assert_equal("application/octet-stream", response.content_type)
   end
 
   test "with pdf format" do
@@ -52,6 +52,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
 
     expected_payload = "%PDF-1. trailer<</Root<</Bob<</Bob[<</MediaBox[0 0 3 3]>>]>>>>>>"
     assert_equal(expected_payload, response.body)
+    assert_equal("application/octet-stream", response.content_type)
   end
 
   test "with text format" do
@@ -61,6 +62,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
 
     expected_payload = "My name is Bob, my ID's are 1, 2, 3"
     assert_equal(expected_payload, response.body)
+    assert_equal("application/octet-stream", response.content_type)
   end
 
   test "rendering nothing" do
@@ -70,6 +72,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal("", response.body)
     assert_equal("value", response.headers["My-Custom-Headers"])
+    assert_nil(response.content_type)
   end
 
   test "when an exception is raised" do
@@ -80,5 +83,6 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
     body = JSON.parse(response.body)
     assert_equal("exception...", body["message"])
     assert_equal("internal_server_error", body["status"])
+    assert_equal("application/json; charset=utf-8", response.content_type)
   end
 end
