@@ -28,9 +28,20 @@ gem 'nucleus-rails'
 
 ```ruby
 require "nucleus-rails"
+
+NucleusCore.configure do |config|
+  config.logger = Rails.logger
+  config.default_response_format = :json
+  config.exceptions = {
+    not_found: ActiveRecord::RecordNotFound,
+    unprocessible: [ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved],
+    bad_request: Apipie::ParamError,
+    unauthorized: Pundit::NotAuthorizedError
+  }
+end
 ```
 
-3. Include the `responder` module, then call your business logic using the `execute` block method. Return either a `NucleusView`, a `Nucleus::Operation::Context`, or raise an exception to render a response.
+3. Include the `responder` module in your controller, call your business logic inside `execute` block, then return either a `NucleusView`, a `Nucleus::Operation::Context`, or raise an exception to render a response.
 
 ```ruby
 class PaymentsController < ApplicationController
