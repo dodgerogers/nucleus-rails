@@ -28,28 +28,28 @@ module NucleusRails::Responder
       @controller = controller
     end
 
-    # entity: <Nucleus::ResponseAdapter status=Int content={} location=String headers={}>
-    def render_json(entity)
+    # entity: <NucleusCore::View::Response>
+    def json(entity)
       controller.render(json: entity.content, **render_attributes(entity))
     end
 
-    def render_xml(entity)
+    def xml(entity)
       controller.render(xml: entity.content, **render_attributes(entity))
     end
 
-    def render_text(entity)
+    def text(entity)
       controller.render(plain: entity.content, **render_attributes(entity))
     end
 
-    def render_pdf(entity)
+    def pdf(entity)
       controller.send_data(entity.content, render_attributes(entity))
     end
 
-    def render_csv(entity)
+    def csv(entity)
       controller.send_data(entity.content, render_attributes(entity))
     end
 
-    def render_nothing(entity)
+    def nothing(entity)
       controller.head(:no_content, render_attributes(entity))
     end
 
