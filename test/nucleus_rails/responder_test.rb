@@ -62,7 +62,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
 
     expected_payload = "My name is Bob, my ID's are 1, 2, 3"
     assert_equal(expected_payload, response.body)
-    assert_equal("application/octet-stream", response.content_type)
+    assert_equal("text/plain; charset=utf-8", response.content_type)
   end
 
   test "rendering nothing" do

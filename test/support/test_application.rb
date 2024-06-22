@@ -7,11 +7,11 @@ class TestView < NucleusCore::View
   end
 
   def json_response
-    NucleusCore::JsonResponse.new(content: { a: { nested: { hash: "value" } }, b: [4, 5, 6] })
+    NucleusCore::View::Response.new(:json, content: { a: { nested: { hash: "value" } }, b: [4, 5, 6] })
   end
 
   def xml_response
-    NucleusCore::XmlResponse.new(content: to_h)
+    NucleusCore::View::Response.new(:xml, content: to_h)
   end
 
   def pdf_response
@@ -20,15 +20,15 @@ class TestView < NucleusCore::View
       trailer<</Root<</#{name}<</#{name}[<</MediaBox[0 0 3 3]>>]>>>>>>
     SQL
 
-    NucleusCore::PdfResponse.new(content: pdf)
+    NucleusCore::View::Response.new(:pdf, content: pdf)
   end
 
   def csv_response
-    NucleusCore::PdfResponse.new(content: "#{name}\n#{ids.join('-')}")
+    NucleusCore::View::Response.new(:csv, content: "#{name}\n#{ids.join('-')}")
   end
 
   def text_response
-    NucleusCore::PdfResponse.new(content: "My name is #{name}, my ID's are #{ids.join(', ')}")
+    NucleusCore::View::Response.new(:text, content: "My name is #{name}, my ID's are #{ids.join(', ')}")
   end
 end
 
@@ -50,7 +50,7 @@ class UsersController < ActionController::API
 
   def show
     execute do |_req|
-      NucleusCore::NoResponse.new(headers: { "my_custom_headers" => "value" })
+      NucleusCore::View::Response.new(:nothing, headers: { "my_custom_headers" => "value" })
     end
   end
 
