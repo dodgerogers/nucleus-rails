@@ -8,7 +8,7 @@ gem "nucleus-core", git: "https://github.com/dodgerogers/nucleus-core-ruby.git",
 gem "minitest", "~> 5.11"
 gem "minitest-ci", "~> 3.4"
 gem "minitest-reporters", "~> 1.6"
-gem "rails", "~> 6.1.7"
+gem "rails", "~> 7.1.3"
 gem "rake", "~> 13.0"
 gem "rubocop", "~> 1.61.0"
 gem "rubocop-minitest", "0.30.0"
