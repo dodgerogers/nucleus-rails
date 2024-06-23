@@ -1,80 +1,19 @@
 require "active_support"
 require "action_controller/railtie"
 require "nucleus_core"
+require "nucleus_rails/request_adapter"
+require "nucleus_rails/response_adapter"
 
 module NucleusRails::Responder
   extend ActiveSupport::Concern
-
-  class RequestAdapter
-    attr_reader :controller
-
-    def initialize(controller)
-      @controller = controller
-    end
-
-    def call(_)
-      {
-        format: controller.request&.format&.to_sym,
-        parameters: controller.params,
-        request: controller.request
-      }
-    end
-  end
-
-  class ResponseAdapter
-    attr_reader :controller
-
-    def initialize(controller)
-      @controller = controller
-    end
-
-    # entity: <NucleusCore::View::Response>
-    def json(entity)
-      controller.render(json: entity.content, **render_attributes(entity))
-    end
-
-    def xml(entity)
-      controller.render(xml: entity.content, **render_attributes(entity))
-    end
-
-    def text(entity)
-      controller.render(plain: entity.content, **render_attributes(entity))
-    end
-
-    def pdf(entity)
-      controller.send_data(entity.content, render_attributes(entity))
-    end
-
-    def csv(entity)
-      controller.send_data(entity.content, render_attributes(entity))
-    end
-
-    def nothing(entity)
-      controller.head(:no_content, render_attributes(entity))
-    end
-
-    def set_header(key, value)
-      controller.response.set_header(key, value)
-    end
-
-    private
-
-    def render_attributes(entity)
-      {
-        headers: entity.headers,
-        status: entity.status,
-        location: entity.location
-      }
-    end
-  end
 
   included do
     attr_accessor :responder
 
     before_action do |controller|
       @responder = NucleusCore::Responder.new(
-        request_adapter: RequestAdapter.new(controller),
-        response_adapter: ResponseAdapter.new(controller)
+        request_adapter: NucleusRails::RequestAdapter.new(controller),
+        response_adapter: NucleusRails::ResponseAdapter.new(controller)
       )
     end
 
