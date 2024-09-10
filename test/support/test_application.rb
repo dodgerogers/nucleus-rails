@@ -6,15 +6,15 @@ class TestView < NucleusCore::View
     super(attrs.slice(:name, :ids))
   end
 
-  def json_response
+  def json
     NucleusCore::View::Response.new(:json, content: { a: { nested: { hash: "value" } }, b: [4, 5, 6] })
   end
 
-  def xml_response
+  def xml
     NucleusCore::View::Response.new(:xml, content: to_h)
   end
 
-  def pdf_response
+  def pdf
     pdf = <<-SQL.squish
       %PDF-1.
       trailer<</Root<</#{name}<</#{name}[<</MediaBox[0 0 3 3]>>]>>>>>>
@@ -23,11 +23,11 @@ class TestView < NucleusCore::View
     NucleusCore::View::Response.new(:pdf, content: pdf)
   end
 
-  def csv_response
+  def csv
     NucleusCore::View::Response.new(:csv, content: "#{name}\n#{ids.join('-')}")
   end
 
-  def text_response
+  def text
     NucleusCore::View::Response.new(:text, content: "My name is #{name}, my ID's are #{ids.join(', ')}")
   end
 end

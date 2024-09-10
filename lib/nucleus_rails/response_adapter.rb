@@ -11,6 +11,10 @@ module NucleusRails
       controller.render(json: entity.content, **render_attributes(entity))
     end
 
+    def html(entity)
+      controller.render(:html, **render_attributes(entity))
+    end
+
     def xml(entity)
       controller.render(xml: entity.content, **render_attributes(entity))
     end
