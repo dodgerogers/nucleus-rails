@@ -1,3 +1,4 @@
+require "rails"
 require "nucleus_core"
 
 module NucleusRails
@@ -7,4 +8,9 @@ module NucleusRails
   autoload :RequestAdapter, "nucleus_rails/request_adapter"
   autoload :Responder, "nucleus_rails/responder"
   autoload :Worker, "nucleus_rails/worker"
+
+  NucleusCore.configure do |config|
+    config.logger = Rails.logger
+    config.default_response_format = :json
+  end
 end

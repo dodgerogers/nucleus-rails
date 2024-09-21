@@ -30,8 +30,6 @@ gem 'nucleus-rails'
 require "nucleus-rails"
 
 NucleusCore.configure do |config|
-  config.logger = Rails.logger
-  config.default_response_format = :json
   config.exceptions = {
     not_found: ActiveRecord::RecordNotFound,
     unprocessible: [ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved],
