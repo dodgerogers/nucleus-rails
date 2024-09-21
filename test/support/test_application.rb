@@ -20,11 +20,11 @@ class TestView < NucleusCore::View
       trailer<</Root<</#{name}<</#{name}[<</MediaBox[0 0 3 3]>>]>>>>>>
     SQL
 
-    NucleusCore::View::Response.new(:pdf, content: pdf)
+    NucleusCore::View::Response.new(:pdf, content: pdf, filename: "testview.pdf")
   end
 
   def csv
-    NucleusCore::View::Response.new(:csv, content: "#{name}\n#{ids.join('-')}")
+    NucleusCore::View::Response.new(:csv, content: "#{name}\n#{ids.join('-')}", filename: "textview.csv")
   end
 
   def text
