@@ -73,6 +73,16 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
     assert_equal("text/plain; charset=utf-8", response.content_type)
   end
 
+  test "with html format" do
+    get "/users.html"
+
+    assert_response 200
+
+    expected_payload = "<h1>Bob</h1><p>1, 2, 3</p>"
+    assert_equal(expected_payload, response.body)
+    assert_equal("text/html; charset=utf-8", response.content_type)
+  end
+
   test "rendering nothing" do
     get "/user.json"
 

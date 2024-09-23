@@ -30,6 +30,10 @@ class TestView < NucleusCore::View
   def text
     NucleusCore::View::Response.new(:text, content: "My name is #{name}, my ID's are #{ids.join(', ')}")
   end
+
+  def html
+    NucleusCore::View::Response.new(:html, content: "<h1>#{name}</h1><p>#{ids.join(', ')}</p>")
+  end
 end
 
 class TestApplication < Rails::Application
