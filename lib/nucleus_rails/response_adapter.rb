@@ -25,11 +25,13 @@ module NucleusRails
       controller.render(json: entity.content, **render_attributes(entity))
     end
 
+    # rubocop:disable Rails/OutputSafety
     def html(entity)
       init_render_context(entity)
 
-      controller.render(:html, **render_attributes(entity))
+      controller.render(html: entity.content.html_safe, **render_attributes(entity))
     end
+    # rubocop:enable Rails/OutputSafety
 
     def xml(entity)
       init_render_context(entity)
