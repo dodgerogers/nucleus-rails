@@ -42,7 +42,11 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
 
     expected_payload = "Bob\n1-2-3"
     assert_equal(expected_payload, response.body)
-    assert_equal("application/octet-stream", response.content_type)
+    assert_equal("text/csv", response.content_type)
+    assert_equal(
+      "attachment; filename=\"textview.csv\"; filename*=UTF-8''textview.csv",
+      response.headers["Content-Disposition"]
+    )
   end
 
   test "with pdf format" do
@@ -52,7 +56,11 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
 
     expected_payload = "%PDF-1. trailer<</Root<</Bob<</Bob[<</MediaBox[0 0 3 3]>>]>>>>>>"
     assert_equal(expected_payload, response.body)
-    assert_equal("application/octet-stream", response.content_type)
+    assert_equal("application/pdf", response.content_type)
+    assert_equal(
+      "attachment; filename=\"testview.pdf\"; filename*=UTF-8''testview.pdf",
+      response.headers["Content-Disposition"]
+    )
   end
 
   test "with text format" do
@@ -63,6 +71,16 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
     expected_payload = "My name is Bob, my ID's are 1, 2, 3"
     assert_equal(expected_payload, response.body)
     assert_equal("text/plain; charset=utf-8", response.content_type)
+  end
+
+  test "with html format" do
+    get "/users.html"
+
+    assert_response 200
+
+    expected_payload = "<h1>Bob</h1><p>1, 2, 3</p>"
+    assert_equal(expected_payload, response.body)
+    assert_equal("text/html; charset=utf-8", response.content_type)
   end
 
   test "rendering nothing" do
