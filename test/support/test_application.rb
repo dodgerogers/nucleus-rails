@@ -43,32 +43,39 @@ class TestApplication < Rails::Application
   config.hosts << "nucleus"
 end
 
-class UsersController < ActionController::API
+class TestCasesController < ActionController::API
   include NucleusRails::Responder
 
-  def index
-    execute do |_req|
+  def view_object
+    render_response do |_req|
       TestView.new(name: "Bob", ids: [1, 2, 3])
     end
   end
 
-  def show
-    execute do |_req|
+  def response_object
+    render_response do |_req|
       NucleusCore::View::Response.new(:nothing, headers: { "my_custom_headers" => "value" })
     end
   end
 
-  def edit
-    execute do |_req|
+  def exception_raised
+    render_response do |_req|
       raise StandardError, "exception..."
     end
+  end
+
+  def inline_syntax
+    view = TestView.new(name: "Bob", ids: [1, 2, 3])
+
+    render_entity(view)
   end
 end
 
 Rails.application.initialize!
 
 Rails.application.routes.draw do
-  get :users, to: "users#index"
-  get :user, to: "users#show"
-  put :user, to: "users#edit"
+  get :view_object, to: "test_cases#view_object"
+  get :response_object, to: "test_cases#response_object"
+  put :exception_raised, to: "test_cases#exception_raised"
+  post :inline_syntax, to: "test_cases#inline_syntax"
 end
