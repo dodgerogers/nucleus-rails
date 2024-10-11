@@ -6,7 +6,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with json format" do
-    get "/users.json"
+    get "/view_object.json"
 
     assert_response 200
 
@@ -16,7 +16,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with xml format" do
-    get "/users.xml"
+    get "/view_object.xml"
 
     assert_response 200
 
@@ -36,7 +36,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with csv format" do
-    get "/users.csv"
+    get "/view_object.csv"
 
     assert_response 200
 
@@ -50,7 +50,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with pdf format" do
-    get "/users.pdf"
+    get "/view_object.pdf"
 
     assert_response 200
 
@@ -64,7 +64,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with text format" do
-    get "/users.text"
+    get "/view_object.text"
 
     assert_response 200
 
@@ -74,7 +74,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with html format" do
-    get "/users.html"
+    get "/view_object.html"
 
     assert_response 200
 
@@ -84,7 +84,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "rendering nothing" do
-    get "/user.json"
+    get "/response_object.json"
 
     assert_response 204
 
@@ -94,7 +94,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "when an exception is raised" do
-    put "/user.json"
+    put "/exception_raised.json"
 
     assert_response 500
 
@@ -105,7 +105,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "using non block syntax" do
-    post "/create_user.json"
+    post "/inline_syntax.json"
 
     assert_response 200
 
