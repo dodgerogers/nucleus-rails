@@ -46,13 +46,21 @@ class PaymentsController < ApplicationController
   include NucleusRails::Responder
 
   def create
-    execute do |req|
+    render_response do |req|
       context, _process = MyWorkflow.call(id: req.parameters[:id])
 
       return context unless context.success?
 
       return MyView.new(resource: context.resource)
     end
+  end
+
+  def show
+    context = MyOperation.call(id: params[:id])
+
+    return render_entity(context) unless context.success?
+
+    return render_entity(MyView.new(resource: context.resource))
   end
 end
 ```

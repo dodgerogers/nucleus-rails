@@ -26,14 +26,14 @@ module NucleusRails::Responder
     # Block syntax
     # #########################################################################
     # def show
-    #   execute do |req|
+    #   render_response do |req|
     #     ctx = MyOperation.call(id: req.params[:id])
     #
     #     return ctx unless ctx.success?
     #     return MyView.new(ctx.entity)
     #   end
     # end
-    def execute(&block)
+    def render_response(&block)
       responder.execute(self, &block)
     end
 
@@ -48,11 +48,17 @@ module NucleusRails::Responder
     #   return render_entity(MyView.new(ctx.entity))
     # end
     def render_entity(entity)
+      init_request_context
+
+      responder.render_entity(entity)
+    end
+
+    private
+
+    def init_request_context
       request_context_attrs = responder.request_adapter&.call(self) || {}
 
       responder.request_context = NucleusCore::RequestAdapter.new(request_context_attrs)
-
-      responder.render_entity(entity)
     end
   end
 end
