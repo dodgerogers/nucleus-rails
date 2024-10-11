@@ -21,8 +21,38 @@ module NucleusRails::Responder
       responder.handle_exception(e)
     end
 
+    # @param block [Proc] An optional block to pass for further customization of the execution.
+    #
+    # Block syntax
+    # #########################################################################
+    # def show
+    #   execute do |req|
+    #     ctx = MyOperation.call(id: req.params[:id])
+    #
+    #     return ctx unless ctx.success?
+    #     return MyView.new(ctx.entity)
+    #   end
+    # end
     def execute(&block)
       responder.execute(self, &block)
+    end
+
+    # @param entity [Object] The entity to be rendered by the responder.
+    #
+    # Inline syntax
+    # #########################################################################
+    # def show
+    #   ctx = MyOperation.call(id: req.params[:id])
+    #
+    #   return render_entity(ctx) unless ctx.success?
+    #   return render_entity(MyView.new(ctx.entity))
+    # end
+    def render_entity(entity)
+      request_context_attrs = responder.request_adapter&.call(self) || {}
+
+      responder.request_context = NucleusCore::RequestAdapter.new(request_context_attrs)
+
+      responder.render_entity(entity)
     end
   end
 end

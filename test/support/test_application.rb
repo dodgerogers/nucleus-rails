@@ -63,6 +63,12 @@ class UsersController < ActionController::API
       raise StandardError, "exception..."
     end
   end
+
+  def create
+    view = TestView.new(name: "Bob", ids: [1, 2, 3])
+
+    render_entity(view)
+  end
 end
 
 Rails.application.initialize!
@@ -71,4 +77,5 @@ Rails.application.routes.draw do
   get :users, to: "users#index"
   get :user, to: "users#show"
   put :user, to: "users#edit"
+  post :create_user, to: "users#create"
 end

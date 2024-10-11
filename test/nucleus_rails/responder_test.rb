@@ -103,4 +103,14 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
     assert_equal("internal_server_error", body["status"])
     assert_equal("application/json; charset=utf-8", response.content_type)
   end
+
+  test "using non block syntax" do
+    post "/create_user.json"
+
+    assert_response 200
+
+    expected_payload = "{\"a\":{\"nested\":{\"hash\":\"value\"}},\"b\":[4,5,6]}"
+    assert_equal(expected_payload, response.body)
+    assert_equal("application/json; charset=utf-8", response.content_type)
+  end
 end
