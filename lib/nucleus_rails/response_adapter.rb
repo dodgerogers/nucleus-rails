@@ -19,49 +19,24 @@ module NucleusRails
     # - `filename`: The name for any file downloads (optional).
     # - `type`: The MIME type of the response (e.g., "application/json").
     # - `disposition`: Content disposition (e.g., "inline" or "attachment").
-    def json(entity)
+    # rubocop:disable Rails/OutputSafety, Metrics/AbcSize;
+    def call(entity)
       init_render_context(entity)
 
-      controller.render(json: entity.content, **render_attributes(entity))
+      case entity.format
+      when :json, :xml
+        controller.render(entity.format => entity.content, **render_attributes(entity))
+      when :html
+        controller.render(entity.format => entity.content.html_safe, **render_attributes(entity))
+      when :text, :plain
+        controller.render(plain: entity.content, **render_attributes(entity))
+      when :pdf, :csv
+        controller.send_data(entity.content, render_attributes(entity))
+      when :nothing
+        controller.head(:no_content, render_attributes(entity))
+      end
     end
-
-    # rubocop:disable Rails/OutputSafety
-    def html(entity)
-      init_render_context(entity)
-
-      controller.render(html: entity.content.html_safe, **render_attributes(entity))
-    end
-    # rubocop:enable Rails/OutputSafety
-
-    def xml(entity)
-      init_render_context(entity)
-
-      controller.render(xml: entity.content, **render_attributes(entity))
-    end
-
-    def text(entity)
-      init_render_context(entity)
-
-      controller.render(plain: entity.content, **render_attributes(entity))
-    end
-
-    def pdf(entity)
-      init_render_context(entity)
-
-      controller.send_data(entity.content, render_attributes(entity))
-    end
-
-    def csv(entity)
-      init_render_context(entity)
-
-      controller.send_data(entity.content, render_attributes(entity))
-    end
-
-    def nothing(entity)
-      init_render_context(entity)
-
-      controller.head(:no_content, render_attributes(entity))
-    end
+    # rubocop:enable Rails/OutputSafety, Metrics/AbcSize:
 
     private
 
