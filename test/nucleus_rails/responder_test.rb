@@ -6,7 +6,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with json format" do
-    get "/view_object.json"
+    get "/block_syntax.json"
 
     assert_response 200
 
@@ -16,7 +16,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with xml format" do
-    get "/view_object.xml"
+    get "/block_syntax.xml"
 
     assert_response 200
 
@@ -36,7 +36,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with csv format" do
-    get "/view_object.csv"
+    get "/block_syntax.csv"
 
     assert_response 200
 
@@ -44,13 +44,13 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
     assert_equal(expected_payload, response.body)
     assert_equal("text/csv", response.content_type)
     assert_equal(
-      "attachment; filename=\"textview.csv\"; filename*=UTF-8''textview.csv",
+      "attachment; filename=\"testview.csv\"; filename*=UTF-8''testview.csv",
       response.headers["Content-Disposition"]
     )
   end
 
   test "with pdf format" do
-    get "/view_object.pdf"
+    get "/block_syntax.pdf"
 
     assert_response 200
 
@@ -64,7 +64,7 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with text format" do
-    get "/view_object.text"
+    get "/block_syntax.text"
 
     assert_response 200
 
@@ -74,13 +74,31 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with html format" do
-    get "/view_object.html"
+    get "/block_syntax.html"
 
     assert_response 200
 
     expected_payload = "<h1>Bob</h1><p>1, 2, 3</p>"
     assert_equal(expected_payload, response.body)
     assert_equal("text/html; charset=utf-8", response.content_type)
+  end
+
+  test "with svg format" do
+    get "/block_syntax.svg"
+
+    assert_response 200
+
+    expected_payload = <<-SVG.squish
+      <svg viewBox=".5 .5 3 4" fill="none" stroke="#20b2a" stroke-linecap="round">
+        <path d="M1 4h-.001 V1h2v.001 M1 2.6 h1v.001"/>
+      </svg>
+    SVG
+    assert_equal(expected_payload, response.body)
+    assert_equal("image/svg+xml", response.content_type)
+    assert_equal(
+      "attachment; filename=\"testview.svg\"; filename*=UTF-8''testview.svg",
+      response.headers["Content-Disposition"]
+    )
   end
 
   test "rendering nothing" do

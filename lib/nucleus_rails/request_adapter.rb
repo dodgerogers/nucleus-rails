@@ -8,7 +8,7 @@ module NucleusRails
 
     def call(_)
       {
-        format: controller.request&.format&.to_sym,
+        format: (controller.params || {}).fetch(:format) { controller.request&.format }&.to_sym,
         parameters: controller.params,
         request: controller.request
       }
