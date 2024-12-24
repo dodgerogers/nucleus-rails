@@ -67,7 +67,7 @@ end
 
 ## Support
 
-If you want to report a bug, or have ideas, feedback or questions about the gem, [let me know via GitHub issues](https://github.com/dodgerogers/nucleus-rails/issues/new) and I will do my best to provide a helpful answer, and if you'd like to support the mission [donate](paypal.me/Dodgerogers)
+If you want to report a bug, or have ideas, feedback or questions about the gem, [let me know via GitHub issues](https://github.com/dodgerogers/nucleus-rails/issues/new) and I will do my best to provide a helpful answer, and if you'd like to support the mission [donate](https://paypal.me/Dodgerogers)
 
 ## License
 
