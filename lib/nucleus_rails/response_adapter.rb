@@ -2,6 +2,10 @@ module NucleusRails
   class ResponseAdapter
     attr_reader :controller
 
+    CONTENT_TYPES = Mime::EXTENSION_LOOKUP
+      .each_with_object({}) { |(k, v), acc| acc[k.to_sym] = v.to_s }
+      .freeze
+
     # `controller` is an instance of either:
     # - ActionController::Base
     # - ActionController::API
@@ -19,26 +23,32 @@ module NucleusRails
     # - `filename`: The name for any file downloads (optional).
     # - `type`: The MIME type of the response (e.g., "application/json").
     # - `disposition`: Content disposition (e.g., "inline" or "attachment").
-    # rubocop:disable Rails/OutputSafety, Metrics/AbcSize;
+    # rubocop:disable Rails/OutputSafety, Metrics/AbcSize
     def call(entity)
       init_render_context(entity)
 
-      case entity.format
-      when :json, :xml
-        controller.render(entity.format => entity.content, **render_attributes(entity))
+      requested_format = sanitize_format(entity.format)
+
+      case requested_format
       when :html
-        controller.render(entity.format => entity.content.html_safe, **render_attributes(entity))
-      when :text, :plain
+        controller.render(html: entity.content.html_safe, **render_attributes(entity))
+      when :text
         controller.render(plain: entity.content, **render_attributes(entity))
-      when :pdf, :csv
+      when :json, :xml, :atom, :js
+        controller.render(requested_format => entity.content, **render_attributes(entity))
+      when *CONTENT_TYPES.keys
         controller.send_data(entity.content, render_attributes(entity))
-      when :nothing
+      else
         controller.head(:no_content, render_attributes(entity))
       end
     end
-    # rubocop:enable Rails/OutputSafety, Metrics/AbcSize:
+    # rubocop:enable Rails/OutputSafety, Metrics/AbcSize
 
     private
+
+    def sanitize_format(string)
+      string.to_s&.downcase&.to_sym
+    end
 
     def init_render_context(entity)
       render_headers(entity.headers)
@@ -53,7 +63,14 @@ module NucleusRails
     end
 
     def render_attributes(entity)
-      entity.to_h.except!(:format, :content, :type)
+      entity
+        .to_h
+        .except(:format, :content)
+        .tap do |attrs|
+          default_filename = "#{entity.class.name.demodulize.downcase}.#{entity.format}"
+          attrs[:filename] = entity.filename.presence || default_filename
+          attrs[:content_type] = CONTENT_TYPES[sanitize_format(entity.format)]
+        end
     end
   end
 end

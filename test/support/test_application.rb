@@ -20,11 +20,15 @@ class TestView < NucleusCore::View
       trailer<</Root<</#{name}<</#{name}[<</MediaBox[0 0 3 3]>>]>>>>>>
     SQL
 
-    NucleusCore::View::Response.new(:pdf, content: pdf, filename: "testview.pdf")
+    NucleusCore::View::Response.new(:pdf, content: pdf, filename: "#{self.class.name.downcase}.pdf")
   end
 
   def csv
-    NucleusCore::View::Response.new(:csv, content: "#{name}\n#{ids.join('-')}", filename: "textview.csv")
+    NucleusCore::View::Response.new(
+      :csv,
+      content: "#{name}\n#{ids.join('-')}",
+      filename: "#{self.class.name.downcase}.csv"
+    )
   end
 
   def text
@@ -33,6 +37,20 @@ class TestView < NucleusCore::View
 
   def html
     NucleusCore::View::Response.new(:html, content: "<h1>#{name}</h1><p>#{ids.join(', ')}</p>")
+  end
+
+  def png
+    NucleusCore::View::Response.new(:png, content: File.read("../test/support/files/example.png"))
+  end
+
+  def svg
+    content = <<-SVG.squish
+      <svg viewBox=".5 .5 3 4" fill="none" stroke="#20b2a" stroke-linecap="round">
+        <path d="M1 4h-.001 V1h2v.001 M1 2.6 h1v.001"/>
+      </svg>
+    SVG
+
+    NucleusCore::View::Response.new(:svg, content: content, filename: "#{self.class.name.downcase}.svg")
   end
 end
 
@@ -46,10 +64,16 @@ end
 class TestCasesController < ActionController::API
   include NucleusRails::Responder
 
-  def view_object
+  def block_syntax
     render_response do |_req|
       TestView.new(name: "Bob", ids: [1, 2, 3])
     end
+  end
+
+  def inline_syntax
+    view = TestView.new(name: "Bob", ids: [1, 2, 3])
+
+    render_entity(view)
   end
 
   def response_object
@@ -63,18 +87,12 @@ class TestCasesController < ActionController::API
       raise StandardError, "exception..."
     end
   end
-
-  def inline_syntax
-    view = TestView.new(name: "Bob", ids: [1, 2, 3])
-
-    render_entity(view)
-  end
 end
 
 Rails.application.initialize!
 
 Rails.application.routes.draw do
-  get :view_object, to: "test_cases#view_object"
+  get :block_syntax, to: "test_cases#block_syntax"
   get :response_object, to: "test_cases#response_object"
   put :exception_raised, to: "test_cases#exception_raised"
   post :inline_syntax, to: "test_cases#inline_syntax"

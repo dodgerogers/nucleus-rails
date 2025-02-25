@@ -43,9 +43,10 @@ module NucleusRails::Responder
     # #########################################################################
     # def show
     #   ctx = MyOperation.call(id: req.params[:id])
-    #
     #   return render_entity(ctx) unless ctx.success?
-    #   return render_entity(MyView.new(ctx.entity))
+    #
+    #   view = MyView.new(ctx.entity)
+    #   return render_entity(view)
     # end
     def render_entity(entity)
       init_request_context
