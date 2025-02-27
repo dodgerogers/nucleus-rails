@@ -7,11 +7,11 @@ class TestView < NucleusCore::View
   end
 
   def json
-    NucleusCore::View::Response.new(:json, content: { a: { nested: { hash: "value" } }, b: [4, 5, 6] })
+    build_response(content: { a: { nested: { hash: "value" } }, b: [4, 5, 6] })
   end
 
   def xml
-    NucleusCore::View::Response.new(:xml, content: to_h)
+    build_response(content: to_h)
   end
 
   def pdf
@@ -20,27 +20,26 @@ class TestView < NucleusCore::View
       trailer<</Root<</#{name}<</#{name}[<</MediaBox[0 0 3 3]>>]>>>>>>
     SQL
 
-    NucleusCore::View::Response.new(:pdf, content: pdf, filename: "#{self.class.name.downcase}.pdf")
+    build_response(content: pdf, filename: "#{self.class.name.downcase}.pdf")
   end
 
   def csv
-    NucleusCore::View::Response.new(
-      :csv,
+    build_response(
       content: "#{name}\n#{ids.join('-')}",
       filename: "#{self.class.name.downcase}.csv"
     )
   end
 
   def text
-    NucleusCore::View::Response.new(:text, content: "My name is #{name}, my ID's are #{ids.join(', ')}")
+    build_response(content: "My name is #{name}, my ID's are #{ids.join(', ')}")
   end
 
   def html
-    NucleusCore::View::Response.new(:html, content: "<h1>#{name}</h1><p>#{ids.join(', ')}</p>")
+    build_response(content: "<h1>#{name}</h1><p>#{ids.join(', ')}</p>")
   end
 
   def png
-    NucleusCore::View::Response.new(:png, content: File.read("../test/support/files/example.png"))
+    build_response(content: File.read("../test/support/files/example.png"))
   end
 
   def svg
@@ -50,7 +49,7 @@ class TestView < NucleusCore::View
       </svg>
     SVG
 
-    NucleusCore::View::Response.new(:svg, content: content, filename: "#{self.class.name.downcase}.svg")
+    build_response(content: content, filename: "#{self.class.name.downcase}.svg")
   end
 end
 
