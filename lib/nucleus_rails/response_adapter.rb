@@ -1,5 +1,5 @@
 module NucleusRails
-  class ResponseAdapter
+  class ResponseAdapter < NucleusCore::ResponseAdapter
     attr_reader :controller
 
     CONTENT_TYPES = Mime::EXTENSION_LOOKUP
@@ -11,6 +11,7 @@ module NucleusRails
     # - ActionController::API
     def initialize(controller)
       @controller = controller
+      super
     end
 
     # `entity` is an instance of `NucleusCore::View::Response`.
