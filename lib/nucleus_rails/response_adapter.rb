@@ -56,7 +56,7 @@ module NucleusRails
 
     def render_headers(headers={})
       (headers || {}).each do |k, value|
-        formatted_key = k.gsub(/\s *|_/, "-")
+        formatted_key = k.to_s.gsub(/\s *|_/, "-")
 
         controller.response.set_header(formatted_key, value)
       end
