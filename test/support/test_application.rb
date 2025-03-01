@@ -1,55 +1,79 @@
 require "rails"
 require "action_controller/railtie"
 
+# TestView is a specialized view class for rendering entity data
+# into various content formats such as JSON, XML, PDF, CSV, and more.
+#
+# This class subclasses `NucleusCore::View` and overrides its behavior
+# to provide formatted responses for different content types.
+#
+# Key Features:
+# - Supports multiple content formats including JSON, XML, CSV, HTML, and more.
+# - Uses class methods to define format-specific content generation.
+# - Dynamically defines instance methods for all supported content types.
+# - Uses `NucleusRails::ResponseAdapter::CONTENT_TYPES` to determine valid formats.
+#
+# Example Usage:
+#   view = TestView.new(name: "TestEntity", ids: [1, 2, 3])
+#
+#   view.json  # => { a: { nested: { hash: "value" } }, b: [4, 5, 6] }
+#   view.html  # => "<h1>TestEntity</h1><p>1, 2, 3</p>"
+#   view.csv   # => "TestEntity\n1-2-3"
+#
+# The class automatically generates instance methods for each content type
+# based on the `NucleusRails::ResponseAdapter::CONTENT_TYPES` hash.
 class TestView < NucleusCore::View
   def initialize(attrs={})
     super(attrs.slice(:name, :ids))
   end
 
-  def json
-    build_response(content: { a: { nested: { hash: "value" } }, b: [4, 5, 6] })
+  def self.json_content(_entity)
+    { a: { nested: { hash: "value" } }, b: [4, 5, 6] }
   end
 
-  def xml
-    build_response(content: to_h)
+  def self.xml_content(entity)
+    entity.to_h
   end
 
-  def pdf
-    pdf = <<-SQL.squish
+  def self.pdf_content(entity)
+    <<-PDF.squish
       %PDF-1.
-      trailer<</Root<</#{name}<</#{name}[<</MediaBox[0 0 3 3]>>]>>>>>>
-    SQL
-
-    build_response(content: pdf, filename: "#{self.class.name.downcase}.pdf")
+      trailer<</Root<</#{entity.name}<</#{entity.name}[<</MediaBox[0 0 3 3]>>]>>>>>>
+    PDF
   end
 
-  def csv
-    build_response(
-      content: "#{name}\n#{ids.join('-')}",
-      filename: "#{self.class.name.downcase}.csv"
-    )
+  def self.csv_content(entity)
+    "#{entity.name}\n#{entity.ids.join('-')}"
   end
 
-  def text
-    build_response(content: "My name is #{name}, my ID's are #{ids.join(', ')}")
+  def self.txt_content(entity)
+    "My name is #{entity.name}, my ID's are #{entity.ids.join(', ')}"
   end
 
-  def html
-    build_response(content: "<h1>#{name}</h1><p>#{ids.join(', ')}</p>")
+  def self.text_content(entity)
+    "My name is #{entity.name}, my ID's are #{entity.ids.join(', ')}"
   end
 
-  def png
-    build_response(content: File.read("../test/support/files/example.png"))
+  def self.html_content(entity)
+    "<h1>#{entity.name}</h1><p>#{entity.ids.join(', ')}</p>"
   end
 
-  def svg
-    content = <<-SVG.squish
+  def self.svg_content(_entity)
+    <<-SVG.squish
       <svg viewBox=".5 .5 3 4" fill="none" stroke="#20b2a" stroke-linecap="round">
         <path d="M1 4h-.001 V1h2v.001 M1 2.6 h1v.001"/>
       </svg>
     SVG
+  end
 
-    build_response(content: content, filename: "#{self.class.name.downcase}.svg")
+  # Generate responses for all supported content types
+  NucleusRails::ResponseAdapter::CONTENT_TYPES
+    .each_key do |k|
+    define_method(k) do
+      klass = self.class
+      content = klass.respond_to?(:"#{k}_content") ? klass.send(:"#{k}_content", self) : "content..."
+      build_response(request_format: k, content: content, filename: "#{self.class.to_s.downcase}.#{k}")
+    end
   end
 end
 
@@ -58,6 +82,10 @@ class TestApplication < Rails::Application
   config.middleware.use ActionDispatch::Cookies
   config.eager_load = :test
   config.hosts << "nucleus"
+
+  NucleusCore.configure do |config|
+    config.logger = Rails.logger
+  end
 end
 
 class TestCasesController < ActionController::API
