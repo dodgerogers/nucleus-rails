@@ -5,6 +5,18 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
     host! "nucleus"
   end
 
+  # Test ALL content types are supported as defined by `Mime::EXTENSION_LOOKUP`
+  NucleusRails::ResponseAdapter::CONTENT_TYPES
+    .each do |format, content_type|
+      test "responds to #{format} format" do
+        get "/block_syntax.#{format}"
+
+        assert_response 200
+
+        assert_match(content_type, response.content_type)
+      end
+    end
+
   test "with json format" do
     get "/block_syntax.json"
 
@@ -64,13 +76,13 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "with text format" do
-    get "/block_syntax.text"
+    get "/block_syntax.txt"
 
     assert_response 200
 
     expected_payload = "My name is Bob, my ID's are 1, 2, 3"
     assert_equal(expected_payload, response.body)
-    assert_equal("text/plain; charset=utf-8", response.content_type)
+    assert_match("text/plain", response.content_type)
   end
 
   test "with html format" do
@@ -97,6 +109,19 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
     assert_equal("image/svg+xml", response.content_type)
     assert_equal(
       "attachment; filename=\"testview.svg\"; filename*=UTF-8''testview.svg",
+      response.headers["Content-Disposition"]
+    )
+  end
+
+  test "with png format" do
+    get "/block_syntax.png"
+
+    assert_response 200
+
+    assert_equal("content...", response.body)
+    assert_equal("image/png", response.content_type)
+    assert_equal(
+      "attachment; filename=\"testview.png\"; filename*=UTF-8''testview.png",
       response.headers["Content-Disposition"]
     )
   end
