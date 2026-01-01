@@ -5,7 +5,7 @@ source "https://rubygems.org"
 gem "nucleus-core", git: "https://github.com/dodgerogers/nucleus-core-ruby.git", branch: "0.3.0"
 # gem "nucleus-core", path: "../nucleus-core"
 
-gem "minitest", "~> 5.11"
+gem "minitest", "~> 6.0"
 gem "minitest-ci", "~> 3.4"
 gem "minitest-reporters", "~> 1.6"
 gem "rails", "~> 7.1.3"
